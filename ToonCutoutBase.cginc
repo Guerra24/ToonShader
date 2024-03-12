@@ -15,7 +15,7 @@ sampler2D _MainTex;
 sampler2D _BumpMap;
 half _BumpMapIntensity;
 sampler2D _Dark;
-sampler2D _VerticalMult;
+//sampler2D _VerticalMult;
 half _EdgeStart;
 half _EdgeEnd;
 half _EdgeIntensity;
@@ -52,9 +52,12 @@ void surf(Input IN, inout SurfaceOutputToon o)
 		#endif
 
 		half edge = smoothstep(_EdgeEnd, _EdgeStart, dot(pixelNormal, normalize(IN.cameraDir)));
-		half verticalLight = smoothstep(0.307, 0.55, dot(pixelNormal, half3(0, 1, 0)) * 0.5 + 0.5);
-
-		half rim = edge * lerp(verticalLight, 1.0, tex2D(_VerticalMult, IN.uv_MainTex).r);
+		#if _EDGE_VERTICAL_VECTOR
+			half verticalLight = smoothstep(0.307, 0.55, dot(pixelNormal, half3(0, 1, 0)) * 0.5 + 0.5);
+			half rim = edge * verticalLight;
+		#else
+			half rim = edge;
+		#endif
 
 		o.Alpha = 1.0;
 
@@ -75,11 +78,6 @@ void surf(Input IN, inout SurfaceOutputToon o)
 
 		o.Albedo = c.rgb + lightRim;
 		o.Dark = d + darkRim * _EdgeDarkMult;
-
-
-		//half3 tmp = half3(highlight, highlight, highlight);
-
-		//o.Albedo = o.Dark = tmp;
 	#endif
 }
 

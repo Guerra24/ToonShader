@@ -8,7 +8,7 @@ struct Input
 	float4 screenPos;
 	float3 viewDir;
 	float3 worldNormal; INTERNAL_DATA
-	#if _TRANSPARENT_HAIR
+	#if _USE_TRANSPARENT_HAIR
 		float vertexDepth;
 		float3 cameraDir;
 	#endif
@@ -18,9 +18,17 @@ sampler2D _MainTex;
 sampler2D _Dark;
 sampler2D _CameraDepthTexture;
 
+#if _USE_TRANSPARENT_HAIR
+	half _HairMaxTransparency;
+	half _HairCameraStartCutoff;
+	half _HairCameraEndCutoff;
+	half _HairDistanceStartCutoff;
+	half _HairDistanceEndCutoff;
+#endif
+
 void vert(inout appdata_full v, out Input o) {
 	UNITY_INITIALIZE_OUTPUT(Input, o);
-	#if _TRANSPARENT_HAIR
+	#if _USE_TRANSPARENT_HAIR
 		float4 clipPos = UnityObjectToClipPos(v.vertex);
 		float zDepth = clipPos.z / clipPos.w;
 		#if !defined(UNITY_REVERSED_Z) // basically only OpenGL
@@ -38,16 +46,16 @@ void surf(Input IN, inout SurfaceOutputToon o)
 {
 	fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
 	fixed3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
-	#if _TRANSPARENT_HAIR
+	#if _USE_TRANSPARENT_HAIR
 		float2 coords = IN.screenPos.xy / IN.screenPos.w;
 		half depth = tex2D(_CameraDepthTexture, coords).r;
 
 		float distance = LinearEyeDepth(IN.vertexDepth) - LinearEyeDepth(depth);
 		if (distance > 0.001) {
-			c.a *= 0.2; // Parametrizar!!!!!!!!!!!!!!!!!!!!!!!!
+			c.a *= _HairMaxTransparency;
 			float3 pixelNormal = WorldNormalVector(IN, o.Normal);
-			c.a *= smoothstep(0.00, -0.05, dot(pixelNormal, IN.cameraDir));
-			float a = smoothstep(0.03, 0.025, distance);
+			c.a *= smoothstep(_HairCameraStartCutoff, _HairCameraEndCutoff, dot(pixelNormal, IN.cameraDir));
+			float a = smoothstep(_HairDistanceEndCutoff, _HairDistanceStartCutoff, distance);
 			c.a *= a;
 		}
 	#endif

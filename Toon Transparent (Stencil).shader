@@ -10,8 +10,13 @@
 		[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4 //"LessEqual"
 		_StencilRef("Stencil Ref", Int) = 0
 		//[Enum(Off, 0, On, 1)] _ZWrite("ZWrite", Float) = 1.0
-		[Header(Extra)]
-		[Toggle(_TRANSPARENT_HAIR)] _Multi_Light("Transparent Hair", Float) = 0
+		[Header(Transparent hair)]
+		[Toggle(_USE_TRANSPARENT_HAIR)] _UseTransparentHair("Transparent Hair", Float) = 0
+		_HairMaxTransparency("Max Transparency", Range(0, 1)) = 0.5
+		_HairCameraStartCutoff("Camera start cutoff", Range(-1, 1)) = 0.0
+		_HairCameraEndCutoff("Camera end cutoff", Range(-1, 1)) = -0.05
+		_HairDistanceStartCutoff("Distance start", Range(0, 0.1)) = 0.025
+		_HairDistanceEndCutoff("Distance end", Range(0, 0.1)) = 0.03
 	}
 	SubShader
 	{
@@ -29,10 +34,10 @@
 
 		CGPROGRAM
 		#pragma surface surf Toon alpha:blend vertex:vert
-		#pragma shader_feature _TRANSPARENT_HAIR
+		#pragma shader_feature _USE_TRANSPARENT_HAIR
 		#pragma target 4.0
 
-		#include "./Toon.cginc"
+		#include "./ToonLighting.cginc"
 
 		#include "./ToonTransparentBase.cginc"
 
