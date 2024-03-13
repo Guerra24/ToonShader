@@ -5,6 +5,7 @@
 		[Header(Textures)]
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
 		_AlphaCutoff("Cutoff" , Range(0, 1)) = 0.5
+		[Toggle(_USE_DYNAMIC_DARK_COLORS)] _UseDynamicDarkColors("Use Dynamic Dark Colors", Float) = 0
 		_Dark("Albedo Dark (RGB)", 2D) = "white" {}
 		[Toggle(_NORMALMAP)] _NormalMap("Use Normals", Float) = 0
 		[Normal] _BumpMap("Normal Map", 2D) = "bump" {}
@@ -67,6 +68,7 @@
 		#pragma shader_feature _USE_LUMINANCE
 		#pragma shader_feature _USE_SPECULAR
 		#pragma shader_feature _EDGE_VERTICAL_VECTOR
+		#pragma shader_feature _USE_DYNAMIC_DARK_COLORS
 		#pragma target 4.0
 
 		#include "./ToonLighting.cginc"

@@ -4,6 +4,7 @@
 	{
 		[Header(Main)]
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
+		[Toggle(_USE_DYNAMIC_DARK_COLORS)] _UseDynamicDarkColors("Use Dynamic Dark Colors", Float) = 0
 		_Dark("Albedo Dark (RGB)", 2D) = "white" {}
 		[Header(Fixed Function)]
 		[Enum(UnityEngine.Rendering.CullMode)] _CullMode("Cull Mode", Int) = 0
@@ -27,6 +28,7 @@
 
 		CGPROGRAM
 		#pragma surface surf Toon alpha:blend
+		#pragma shader_feature _USE_DYNAMIC_DARK_COLORS
 		#pragma target 4.0
 
 		#include "./ToonLighting.cginc"

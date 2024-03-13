@@ -1,6 +1,8 @@
 #ifndef TOON_TRANSPARENT_INCLUDED
 #define TOON_TRANSPARENT_INCLUDED
 
+#include "./ToonUtil.cginc"
+
 struct Input
 {
 	float4 position : SV_POSITION;
@@ -45,7 +47,13 @@ UNITY_INSTANCING_BUFFER_END(Props)
 void surf(Input IN, inout SurfaceOutputToon o)
 {
 	fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
-	fixed3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
+
+	#if _USE_DYNAMIC_DARK_COLORS
+		fixed3 d = HSVToRGB(Saturation(RGBToHSV(c.rgb * 0.5), 1.2));
+	#else
+		fixed3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
+	#endif
+
 	#if _USE_TRANSPARENT_HAIR
 		float2 coords = IN.screenPos.xy / IN.screenPos.w;
 		half depth = tex2D(_CameraDepthTexture, coords).r;
