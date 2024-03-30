@@ -11,6 +11,7 @@ struct Input
 	float3 worldRefl;
 	float3 cameraDir;
 	fixed facing : VFACE;
+	float4 screenPos;
 };
 
 sampler2D _MainTex;
@@ -40,6 +41,7 @@ void surf(Input IN, inout SurfaceOutputToon o)
 {
 	fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
 	clip(c.a - _AlphaCutoff);
+	//clip(isDithered(IN.screenPos.xy / IN.screenPos.w, c.a));
 
 	#if !UNITY_PASS_SHADOWCASTER
 

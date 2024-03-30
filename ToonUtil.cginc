@@ -1,5 +1,6 @@
 #ifndef TOON_UTIL_INCLUDED
 #define TOON_UTIL_INCLUDED
+#include "UnityCG.cginc"
 
 float4x4 contrastMatrix(float c)
 {
@@ -39,6 +40,28 @@ float3 Saturation(float3 p, float v)
 float3 Contrast(float3 p, float v)
 {
 	return mul(float4(p, 1.0), contrastMatrix(v)).rgb;
+}
+
+// Returns > 0 if not clipped, < 0 if clipped based
+// on the dither
+// For use with the "clip" function
+// pos is the fragment position in screen space from [0,1]
+float isDithered(float2 pos, float alpha) {
+    pos *= _ScreenParams.xy;
+
+    // Define a dither threshold matrix which can
+    // be used to define how a 4x4 set of pixels
+    // will be dithered
+    float DITHER_THRESHOLDS[16] =
+    {
+        1.0 / 17.0,  9.0 / 17.0,  3.0 / 17.0, 11.0 / 17.0,
+        13.0 / 17.0,  5.0 / 17.0, 15.0 / 17.0,  7.0 / 17.0,
+        4.0 / 17.0, 12.0 / 17.0,  2.0 / 17.0, 10.0 / 17.0,
+        16.0 / 17.0,  8.0 / 17.0, 14.0 / 17.0,  6.0 / 17.0
+    };
+
+    int index = (int(pos.x) % 4) * 4 + int(pos.y) % 4;
+    return alpha - DITHER_THRESHOLDS[index];
 }
 
 #endif

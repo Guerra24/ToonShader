@@ -48,7 +48,7 @@
 			ENDCG
 		}
 
-		Tags { "RenderType" = "Opaque" "Queue" = "AlphaTest" }
+		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" }
 		LOD 200
 		Cull [_CullMode]
 

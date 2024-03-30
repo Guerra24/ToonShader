@@ -1,4 +1,4 @@
-﻿Shader "Custom/Toon Cutout (Stencil)"
+﻿Shader "Custom/Toon Cutout (No outline)"
 {
 	Properties
 	{
@@ -36,31 +36,9 @@
 	}
 	SubShader
 	{
-		Pass {
-			Tags { "RenderType" = "Opaque" }
-			LOD 200
-			Cull Front
-			Stencil {
-				Ref [_StencilRef]
-				Comp Always
-				Pass Replace
-			}
-
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-			#include "./ToonCutoutOutline.cginc"
-			ENDCG
-		}
-
 		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" }
 		LOD 200
 		Cull [_CullMode]
-		Stencil {
-			Ref [_StencilRef]
-			Comp Always
-			Pass Replace
-		}
 
 		CGPROGRAM
 		#pragma surface surf Toon vertex:vert fullforwardshadows addshadow

@@ -6,8 +6,6 @@ Shader "Custom/Toon Cutout Outline Depth"
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
 		_AlphaCutoff("Cutoff" , Range(0,1)) = 0.5
 		_OutlineWidth("Outline Width", Range(0, 0.01)) = 0
-		//[Header(Engine support)]
-		//[Toggle(_MULTI_LIGHT)] _Multi_Light("VRChat Fix / Multi light", Float) = 0
 	}
 	SubShader
 	{
@@ -15,6 +13,7 @@ Shader "Custom/Toon Cutout Outline Depth"
 			Name "ShadowCaster"
 			Tags { "LightMode" = "ShadowCaster" }
 			Cull Front
+			ColorMask 0
 
 			CGPROGRAM
 			#pragma vertex vert
