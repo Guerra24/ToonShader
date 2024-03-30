@@ -21,7 +21,7 @@ Shader "Custom/Toon Transparent (Depth)"
 	}
 	SubShader
 	{
-		Tags { "RenderType" = "Opaque" "Queue"="Transparent" }
+		Tags { "RenderType" = "Opaque" "Queue"="Transparent" "ForceNoShadowCasting"="True" }
 		LOD 200
 		Offset -1, -1
 		Cull [_CullMode]
@@ -60,7 +60,7 @@ Shader "Custom/Toon Transparent (Depth)"
 		}
 
 		CGPROGRAM
-		#pragma surface surf Toon alpha:blend fullforwardshadows addshadow
+		#pragma surface surf Toon alpha:blend
 		#pragma shader_feature _USE_DYNAMIC_DARK_COLORS
 		#pragma target 4.0
 

@@ -13,7 +13,6 @@ Shader "Custom/Toon Cutout Outline Depth"
 			Name "ShadowCaster"
 			Tags { "LightMode" = "ShadowCaster" }
 			Cull Front
-			ColorMask 0
 
 			CGPROGRAM
 			#pragma vertex vert
