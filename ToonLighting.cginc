@@ -107,7 +107,7 @@ half3 BRDF_DirectionalLight(half3 diffColor, half3 darkColor, float3 normal, hal
 	half3 finalLight = (indirect.diffuse + light.color * smoothstep(-0.1, 0.1, NdotL));
 	half luminance = smoothstep(0.0, 0.5, Luminance(finalLight));
 	#if _USE_SPECULAR
-		return lerp(darkColor + specular * _SpecularIntensityDark, diffColor + specular, min(luminance, 1.0));
+		return lerp(darkColor, diffColor + specular, min(luminance, 1.0));
 	#else
 		return lerp(darkColor, diffColor, min(luminance, 1.0));
 	#endif
