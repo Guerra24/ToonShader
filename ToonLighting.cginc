@@ -78,22 +78,44 @@ struct SurfaceOutputToon
 
 #if _USE_SPECULAR
 	half _SpecularSize;
-	half _SpecularPosition;
-	half _SpecularSharpness;
 	half _SpecularIntensity;
+	half _SpecularIntensityDark;
+
+	#define PI 3.14159265359
+
+	float DistributionGGX(float3 N, float3 H, float a)
+	{
+		float a2 = a * a;
+		float NdotH = max(dot(N, H), 0.0);
+		float NdotH2 = NdotH * NdotH;
+
+		float nom = a2;
+		float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+		denom = PI * denom * denom;
+
+		return nom / denom;
+	}
 #endif
 
-half3 BRDF_DirectionalLight(half3 diffColor, half3 darkColor, float3 normal, UnityLight light, UnityIndirect indirect)
+half3 BRDF_DirectionalLight(half3 diffColor, half3 darkColor, float3 normal, half3 viewDir, UnityLight light, UnityIndirect indirect)
 {
-	half3 finalLight = (indirect.diffuse + light.color * smoothstep(-0.1, 0.1, dot(normal, light.dir)));
+	float NdotL = dot(normal, light.dir);
+	#if _USE_SPECULAR
+		half3 H = normalize(viewDir + light.dir);
+		float specular = DistributionGGX(normal, H, _SpecularSize) * _SpecularIntensity * NdotL;
+	#endif
+	half3 finalLight = (indirect.diffuse + light.color * smoothstep(-0.1, 0.1, NdotL));
 	half luminance = smoothstep(0.0, 0.5, Luminance(finalLight));
-	half3 color = lerp(darkColor, diffColor, min(luminance, 1.0));
-	return color;
+	#if _USE_SPECULAR
+		return lerp(darkColor + specular * _SpecularIntensityDark, diffColor + specular, min(luminance, 1.0));
+	#else
+		return lerp(darkColor, diffColor, min(luminance, 1.0));
+	#endif
 }
 
 half4 LightingToon(SurfaceOutputToon s, half3 viewDir, UnityGI gi)
 {
-	#if _USE_SPECULAR
+	#if _USE_SPECULAR/*
 
 		half lowerLimit = _SpecularPosition - _SpecularSize;
 		half upperLimit = _SpecularPosition + _SpecularSize;
@@ -101,9 +123,10 @@ half4 LightingToon(SurfaceOutputToon s, half3 viewDir, UnityGI gi)
 		half highlight = smoothstep(lowerLimit - _SpecularSharpness, lowerLimit + _SpecularSharpness, dot(s.Refl, half3(0, 1, 0))) *
 						 smoothstep(upperLimit + _SpecularSharpness, upperLimit - _SpecularSharpness, dot(s.Refl, half3(0, 1, 0)));
 		highlight *= _SpecularIntensity;
-		return half4(BRDF_DirectionalLight(s.Albedo + s.Albedo * highlight, s.Dark, s.Normal, gi.light, gi.indirect), s.Alpha);
+		return half4(BRDF_DirectionalLight(s.Albedo + s.Albedo * highlight, s.Dark, s.Normal, gi.light, gi.indirect), s.Alpha);*/
+		return half4(BRDF_DirectionalLight(s.Albedo, s.Dark, s.Normal, viewDir, gi.light, gi.indirect), s.Alpha);
 	#else
-		return half4(BRDF_DirectionalLight(s.Albedo, s.Dark, s.Normal, gi.light, gi.indirect), s.Alpha);
+		return half4(BRDF_DirectionalLight(s.Albedo, s.Dark, s.Normal, viewDir, gi.light, gi.indirect), s.Alpha);
 	#endif
 }
 

@@ -21,9 +21,10 @@
 		[Header(Specular)]
 		[Toggle(_USE_SPECULAR)] _UseSpecular("Use Specular", Float) = 0
 		_SpecularSize("Size", Range(0, 1)) = 0.0
-		_SpecularPosition("Position", Range(-1, 1)) = 1.0
-		_SpecularSharpness("Sharpness", Range(0.001, 1)) = 0.1
-		_SpecularIntensity("Intensity", Range(0, 5)) = 1.0
+		//_SpecularPosition("Position", Range(-1, 1)) = 1.0
+		//_SpecularSharpness("Sharpness", Range(0.001, 1)) = 0.1
+		_SpecularIntensity("Intensity", Range(0, 1)) = 1.0
+		_SpecularIntensityDark("Intensity (Dark)", Range(0, 1)) = 0.5
 		//_EdgeLuminanceMult("Luminance Mult", Range(0, 10)) = 2.0
 		[Header(Outline)]
 		_OutlineColor("Color", Color) = (0.5, 0.5, 0.5, 0.0)
