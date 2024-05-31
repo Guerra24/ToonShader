@@ -48,10 +48,10 @@ void surf(Input IN, inout SurfaceOutputToon o)
 {
 	fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
 
-	#if _USE_DYNAMIC_DARK_COLORS
-		fixed3 d = HSVToRGB(Saturation(RGBToHSV(c.rgb * 0.5), 1.2));
-	#else
+	#if !_USE_NEW_SHADING
 		fixed3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
+	#else
+		fixed3 d = fixed3(0, 0, 0);
 	#endif
 
 	#if _USE_TRANSPARENT_HAIR

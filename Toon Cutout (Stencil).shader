@@ -1,15 +1,19 @@
-﻿Shader "Custom/Toon Cutout (Stencil)"
+﻿Shader "Guerra24/Toon Cutout (Stencil)"
 {
 	Properties
 	{
 		[Header(Textures)]
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
 		_AlphaCutoff("Cutoff" , Range(0, 1)) = 0.5
-		[Toggle(_USE_DYNAMIC_DARK_COLORS)] _UseDynamicDarkColors("Use Dynamic Dark Colors", Float) = 0
 		_Dark("Albedo Dark (RGB)", 2D) = "white" {}
 		[Toggle(_NORMALMAP)] _NormalMap("Use Normals", Float) = 0
 		[Normal] _BumpMap("Normal Map", 2D) = "bump" {}
 		_BumpMapIntensity("Normal Map Intensity", Range(0, 1)) = 1.0
+		[Header(Lighting)]
+		_Sharpness("Sharpness", Range(0, 1)) = 0.1
+		[Toggle(_USE_NEW_SHADING)] _UseNewShading("Use new shading", Float) = 0
+		_ShadowColor("Shadow color", Color) = (1.0, 1.0, 1.0, 0.0)
+		[Toggle(_USE_AMBIENT)] _UseAmbient("Use ambient", Float) = 0
 		[Header(Edge)]
 		_EdgeIntensity("Intensity", Range(0, 1)) = 0.0
 		_EdgeDarkMult("Dark Mult", Range(0, 1)) = 0.25
@@ -21,11 +25,8 @@
 		[Header(Specular)]
 		[Toggle(_USE_SPECULAR)] _UseSpecular("Use Specular", Float) = 0
 		_SpecularSize("Size", Range(0, 1)) = 0.0
-		//_SpecularPosition("Position", Range(-1, 1)) = 1.0
-		//_SpecularSharpness("Sharpness", Range(0.001, 1)) = 0.1
 		_SpecularIntensity("Intensity", Range(0, 1)) = 1.0
 		_SpecularIntensityDark("Intensity (Dark)", Range(0, 1)) = 0.5
-		//_EdgeLuminanceMult("Luminance Mult", Range(0, 10)) = 2.0
 		[Header(Outline)]
 		_OutlineColor("Color", Color) = (0.5, 0.5, 0.5, 0.0)
 		_OutlineWidth("Width", Range(0, 0.01)) = 0
@@ -69,7 +70,8 @@
 		#pragma shader_feature _USE_LUMINANCE
 		#pragma shader_feature _USE_SPECULAR
 		#pragma shader_feature _EDGE_VERTICAL_VECTOR
-		#pragma shader_feature _USE_DYNAMIC_DARK_COLORS
+		#pragma shader_feature _USE_NEW_SHADING
+		#pragma shader_feature _USE_AMBIENT
 		#pragma target 4.0
 
 		#include "./ToonLighting.cginc"
@@ -78,5 +80,4 @@
 
 		ENDCG
 	}
-		FallBack "Diffuse"
 }

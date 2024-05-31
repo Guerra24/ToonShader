@@ -1,4 +1,4 @@
-Shader "Custom/Toon Cutout Outline Depth"
+Shader "Guerra24/Toon Cutout Outline Depth"
 {
 	Properties
 	{

@@ -22,7 +22,6 @@ sampler2D _Dark;
 half _EdgeStart;
 half _EdgeEnd;
 half _EdgeIntensity;
-half _EdgeDarkMult;
 //half _EdgeLuminanceMult;
 half _AlphaCutoff;
 float4 _EdgeColor;
@@ -45,10 +44,10 @@ void surf(Input IN, inout SurfaceOutputToon o)
 
 	#if !UNITY_PASS_SHADOWCASTER
 
-		#if _USE_DYNAMIC_DARK_COLORS
-			fixed3 d = HSVToRGB(Saturation(RGBToHSV(c.rgb * 0.5), 1.2));
-		#else
+		#if !_USE_NEW_SHADING
 			fixed3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
+		#else
+			fixed3 d = fixed3(0, 0, 0);
 		#endif
 
 		#if _NORMALMAP
@@ -79,14 +78,20 @@ void surf(Input IN, inout SurfaceOutputToon o)
 		#endif
 			* _EdgeIntensity * _EdgeColor.rgb;
 
-		half3 darkRim = rim
-		#if _USE_LUMINANCE
-			* pow(1 + dl, 4)
+		#if !_USE_NEW_SHADING
+			half3 darkRim = rim
+			#if _USE_LUMINANCE
+				* pow(1 + dl, 4)
+			#endif
+				* _EdgeIntensity * _EdgeColor.rgb;
 		#endif
-			* _EdgeIntensity * _EdgeColor.rgb;
 
-		o.Albedo = c.rgb + lightRim;
-		o.Dark = d + darkRim * _EdgeDarkMult;
+		o.Albedo = c.rgb;
+		o.LightRim = lightRim;
+		o.Dark = d;
+		#if !_USE_NEW_SHADING
+			o.DarkRim = darkRim * _EdgeDarkMult;
+		#endif
 	#endif
 }
 

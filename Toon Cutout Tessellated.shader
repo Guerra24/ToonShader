@@ -1,4 +1,4 @@
-﻿Shader "Custom/Toon Cutout Tessellated"
+﻿Shader "Guerra24/Toon Cutout Tessellated"
 {
 	Properties
 	{

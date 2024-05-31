@@ -1,12 +1,11 @@
 // Upgrade NOTE: replaced 'defined FOG_COMBINED_WITH_WORLD_POS' with 'defined (FOG_COMBINED_WITH_WORLD_POS)'
 
-Shader "Custom/Toon Transparent (VRChat)"
+Shader "Guerra24/Toon Transparent (VRChat)"
 {
 	Properties
 	{
 		[Header(Main)]
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
-		[Toggle(_USE_DYNAMIC_DARK_COLORS)] _UseDynamicDarkColors("Use Dynamic Dark Colors", Float) = 0
 		_Dark("Albedo Dark (RGB)", 2D) = "white" {}
 		[Header(Fixed Function)]
 		[Enum(UnityEngine.Rendering.CullMode)] _CullMode("Cull Mode", Int) = 0
@@ -20,6 +19,10 @@ Shader "Custom/Toon Transparent (VRChat)"
 		_HairCameraEndCutoff("Camera end cutoff", Range(-1, 1)) = -0.05
 		_HairDistanceStartCutoff("Distance start", Range(0, 0.1)) = 0.025
 		_HairDistanceEndCutoff("Distance end", Range(0, 0.1)) = 0.03
+		[Header(Lighting)]
+		_Sharpness("Sharpness", Range(0, 1)) = 0.1
+		[Toggle(_USE_NEW_SHADING)] _UseNewShading("Use new shading", Float) = 0
+		_ShadowColor("Shadow color", Color) = (1.0, 1.0, 1.0, 0.0)
 	}
 	SubShader
 	{
