@@ -6,9 +6,25 @@ Shader "Guerra24/Toon Cutout Outline Depth"
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
 		_AlphaCutoff("Cutoff" , Range(0,1)) = 0.5
 		_OutlineWidth("Outline Width", Range(0, 0.01)) = 0
+		_OutlineDepth("Depth", Range(0, 0.05)) = 0.01
 	}
 	SubShader
 	{
+		Tags { "Queue" = "Geometry" "RenderPipeline" = "UniversalPipeline" }
+
+		Pass {
+			Tags { "LightMode" = "DepthNormalsOnly" }
+			LOD 200
+			Cull Front
+
+			HLSLPROGRAM
+			#include_with_pragmas "./URP/ToonCutoutOutlineDepth.hlsl"
+			ENDHLSL
+		}
+	}
+	SubShader
+	{
+		Tags { "RenderPipeline" = "" }
 		Pass {
 			Name "ShadowCaster"
 			Tags { "LightMode" = "ShadowCaster" }

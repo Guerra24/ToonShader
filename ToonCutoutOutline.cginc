@@ -17,7 +17,7 @@ struct v2f {
 
 v2f vert (appdata_base v) {
 	v2f o;
-	float3 camDir = mul(unity_ObjectToWorld, v.vertex) - _WorldSpaceCameraPos;
+	/*float3 camDir = mul(unity_ObjectToWorld, v.vertex) - _WorldSpaceCameraPos;*/
 	float3 viewDir = ObjSpaceViewDir(v.vertex);
 	v.vertex.xyz += normalize(v.normal) * _OutlineWidth - normalize(viewDir) * _OutlineDepth;
 	o.pos = UnityObjectToClipPos(v.vertex);

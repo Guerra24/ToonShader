@@ -7,6 +7,7 @@
 		_Dark("Albedo Dark (RGB)", 2D) = "white" {}
 		[Header(Lighting)]
 		_Sharpness("Sharpness", Range(0, 1)) = 0.1
+		_IndirectSharpness("Indirect sharpness", Range(0, 0.5)) = 0.05
 		[Toggle(_USE_NEW_SHADING)] _UseNewShading("Use new shading", Float) = 0
 		_ShadowColor("Shadow color", Color) = (1.0, 1.0, 1.0, 0.0)
 		[Toggle(_USE_AMBIENT)] _UseAmbient("Use ambient", Float) = 0
@@ -30,7 +31,25 @@
 	}
 	SubShader
 	{
-		Tags { "RenderType" = "Opaque" "Queue"="Transparent" "ForceNoShadowCasting"="True" }
+		Tags { "Queue" = "Transparent" "RenderPipeline" = "UniversalPipeline" }
+
+		Pass
+		{
+			Name "UniversalForwardOnly"
+			Tags { "LightMode" = "UniversalForwardOnly" }
+			LOD 200
+			Offset -1, -1
+			Cull [_CullMode]
+			Blend SrcAlpha OneMinusSrcAlpha
+
+			HLSLPROGRAM
+			#include_with_pragmas "./URP/ToonTransparentBase.hlsl"
+			ENDHLSL
+		}
+	}
+	SubShader
+	{
+		Tags { "RenderType" = "Opaque" "Queue"="Transparent" "ForceNoShadowCasting"="True" "RenderPipeline" = "" }
 		LOD 200
 		Offset -1, -1
 		Cull [_CullMode]

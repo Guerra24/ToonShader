@@ -11,6 +11,7 @@
 		_BumpMapIntensity("Normal Map Intensity", Range(0, 1)) = 1.0
 		[Header(Lighting)]
 		_Sharpness("Sharpness", Range(0, 1)) = 0.1
+		_IndirectSharpness("Indirect sharpness", Range(0, 0.5)) = 0.05
 		[Toggle(_USE_NEW_SHADING)] _UseNewShading("Use new shading", Float) = 0
 		_ShadowColor("Shadow color", Color) = (1.0, 1.0, 1.0, 0.0)
 		[Toggle(_USE_AMBIENT)] _UseAmbient("Use ambient", Float) = 0
@@ -36,6 +37,69 @@
 		[Enum(UnityEngine.Rendering.CullMode)] _CullMode("Cull Mode", Int) = 0
 		_StencilRef("Stencil Ref", Int) = 0
 	}
+
+	SubShader
+	{
+		Tags { "Queue" = "Geometry" "RenderPipeline" = "UniversalPipeline" }
+		Pass
+		{
+			Name "UniversalForwardOnly"
+			Tags { "LightMode" = "UniversalForwardOnly" }
+			LOD 200
+			Cull [_CullMode]
+			Stencil {
+				Ref [_StencilRef]
+				Comp Always
+				Pass Replace
+			}
+
+			HLSLPROGRAM
+			#include_with_pragmas "./URP/ToonCutoutBase.hlsl"
+			ENDHLSL
+		}
+
+
+		Pass {
+			Name "SRPDefaultUnlit"
+			Tags { "LightMode" = "SRPDefaultUnlit" }
+			LOD 200
+			Cull Front
+			Stencil {
+				Ref [_StencilRef]
+				Comp Always
+				Pass Replace
+			}
+
+			HLSLPROGRAM
+			#include_with_pragmas "./URP/ToonCutoutOutline.hlsl"
+			ENDHLSL
+		}
+
+		Pass
+		{
+			Name "DepthNormalsOnly"
+			Tags { "LightMode" = "DepthNormalsOnly" }
+			LOD 200
+			Cull [_CullMode]
+
+			HLSLPROGRAM
+			#include_with_pragmas "./URP/ToonDepthBase.hlsl"
+			ENDHLSL
+		}
+
+		Pass
+		{
+			Name "ShadowCaster"
+			Tags { "LightMode" = "ShadowCaster" }
+			LOD 200
+			Cull Back
+			ColorMask 0
+
+			HLSLPROGRAM
+			#include_with_pragmas "./URP/ToonShadowCasterBase.hlsl"
+			ENDHLSL
+		}
+	}
 	SubShader
 	{
 		Pass {
@@ -55,7 +119,7 @@
 			ENDCG
 		}
 
-		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" }
+		Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "RenderPipeline" = "" }
 		LOD 200
 		Cull [_CullMode]
 		Stencil {

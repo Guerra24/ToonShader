@@ -55,16 +55,11 @@ void surf(Input IN, inout SurfaceOutputToon o)
 			o.Normal = IN.facing > 0 ? n : -n;
 		#endif
 		float3 pixelNormal = WorldNormalVector(IN, o.Normal);
-		#if _USE_SPECULAR
-			o.Refl = WorldReflectionVector(IN, o.Normal);
-		#endif
 
-		half edge = smoothstep(_EdgeEnd, _EdgeStart, dot(pixelNormal, normalize(IN.cameraDir)));
+		half rim = smoothstep(_EdgeEnd, _EdgeStart, dot(pixelNormal, normalize(IN.cameraDir)));
 		#if _EDGE_VERTICAL_VECTOR
 			half verticalLight = smoothstep(0.307, 0.55, dot(pixelNormal, half3(0, 1, 0)) * 0.5 + 0.5);
-			half rim = edge * verticalLight;
-		#else
-			half rim = edge;
+			rim *= verticalLight;
 		#endif
 
 		o.Alpha = 1.0;

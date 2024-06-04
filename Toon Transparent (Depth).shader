@@ -7,6 +7,7 @@ Shader "Guerra24/Toon Transparent (Depth)"
 		_Dark("Albedo Dark (RGB)", 2D) = "white" {}
 		[Header(Lighting)]
 		_Sharpness("Sharpness", Range(0, 1)) = 0.1
+		_IndirectSharpness("Indirect sharpness", Range(0, 0.5)) = 0.05
 		[Toggle(_USE_NEW_SHADING)] _UseNewShading("Use new shading", Float) = 0
 		_ShadowColor("Shadow color", Color) = (1.0, 1.0, 1.0, 0.0)
 		[Toggle(_USE_AMBIENT)] _UseAmbient("Use ambient", Float) = 0

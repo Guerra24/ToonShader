@@ -71,9 +71,6 @@ struct SurfaceOutputToon
 	half3 Emission;
 	half3 Dark;
 	half Alpha;        // used by transparent shader
-	#if _USE_SPECULAR
-		float3 Refl;
-	#endif
 	half3 LightRim;
 	half3 DarkRim;
 };
