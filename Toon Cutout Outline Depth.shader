@@ -10,6 +10,10 @@ Shader "Guerra24/Toon Cutout Outline Depth"
 	}
 	SubShader
 	{
+		PackageRequirements
+		{
+				"com.unity.render-pipelines.universal": "17.0.0"
+		}
 		Tags { "Queue" = "Geometry" "RenderPipeline" = "UniversalPipeline" }
 
 		Pass {

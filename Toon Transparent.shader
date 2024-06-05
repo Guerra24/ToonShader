@@ -31,6 +31,10 @@
 	}
 	SubShader
 	{
+		PackageRequirements
+		{
+				"com.unity.render-pipelines.universal": "17.0.0"
+		}
 		Tags { "Queue" = "Transparent" "RenderPipeline" = "UniversalPipeline" }
 
 		Pass
@@ -38,7 +42,6 @@
 			Name "UniversalForwardOnly"
 			Tags { "LightMode" = "UniversalForwardOnly" }
 			LOD 200
-			Offset -1, -1
 			Cull [_CullMode]
 			Blend SrcAlpha OneMinusSrcAlpha
 
@@ -51,7 +54,6 @@
 	{
 		Tags { "RenderType" = "Opaque" "Queue"="Transparent" "ForceNoShadowCasting"="True" "RenderPipeline" = "" }
 		LOD 200
-		Offset -1, -1
 		Cull [_CullMode]
 
 		CGPROGRAM
