@@ -44,7 +44,7 @@
 	{
 		PackageRequirements
 		{
-				"com.unity.render-pipelines.universal": "17.0.0"
+			"com.unity.render-pipelines.universal": "17.0.0"
 		}
 		Tags { "Queue" = "Transparent" "RenderPipeline" = "UniversalPipeline" }
 

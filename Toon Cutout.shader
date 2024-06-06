@@ -41,7 +41,7 @@
 	{
 		PackageRequirements
 		{
-				"com.unity.render-pipelines.universal": "17.0.0"
+			"com.unity.render-pipelines.universal": "17.0.0"
 		}
 		Tags { "Queue" = "Geometry" "RenderPipeline" = "UniversalPipeline" }
 		//https://gamedevbill.com/geometry-shaders-in-urp/
@@ -58,16 +58,16 @@
 			ENDHLSL
 		}
 
-		Pass {
-			Name "SRPDefaultUnlit"
-			Tags { "LightMode" = "SRPDefaultUnlit" }
-			LOD 200
-			Cull Front
+		//Pass {
+		//	Name "SRPDefaultUnlit"
+		//	Tags { "LightMode" = "SRPDefaultUnlit" }
+		//	LOD 200
+		//	Cull Front
 
-			HLSLPROGRAM
-			#include_with_pragmas "./URP/ToonCutoutOutline.hlsl"
-			ENDHLSL
-		}
+		//	HLSLPROGRAM
+		//	#include_with_pragmas "./URP/ToonCutoutOutline.hlsl"
+		//	ENDHLSL
+		//}
 
 		Pass
 		{

@@ -35,13 +35,20 @@ struct Varyings
 	float4 shadowCoords : TEXCOORD4;
 	float3 positionWS : TEXCOORD5;
 	DECLARE_LIGHTMAP_OR_SH(staticLightmapUV, vertexSH, 6);
+	#ifndef _DISABLE_GEOM
+		float4 outline : TEXCOORD7;
+	#endif
 };
 
 Varyings vert(Attributes IN)
 {
 	Varyings OUT;
 	
-	OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+	#ifndef _DISABLE_GEOM
+		OUT.positionHCS = float4(IN.positionOS.xyz, 0.0);
+	#else
+		OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+	#endif
 	OUT.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 	
 	VertexPositionInputs vertexInput = GetVertexPositionInputs(IN.positionOS);
@@ -53,65 +60,82 @@ Varyings vert(Attributes IN)
 	OUT.shadowCoords = GetShadowCoord(vertexInput);
 	OUT.positionWS = vertexInput.positionWS;
 	OUTPUT_SH4(vertexInput.positionWS, OUT.normalWS, normalize(OUT.viewDir), OUT.vertexSH);
+	#ifndef _DISABLE_GEOM
+		OUT.outline = float4(normalize(IN.normalOS), 0.0);
+	#endif
 	
 	return OUT;
 }
+
+#ifndef _DISABLE_GEOM
+	#include_with_pragmas "./ToonCutoutGeometry.hlsl"
+#endif
 
 half4 frag(Varyings IN, FRONT_FACE_TYPE frontFace : FRON_FACE_SEMANTIC) : SV_Target
 {
 	half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
 	clip(c.a - _AlphaCutoff);
-
-	#if !_USE_NEW_SHADING
-		half3 d = SAMPLE_TEXTURE2D(_Dark, sampler_Dark, IN.uv).rgb;
-	#else
-		half3 d = 0;
+	#ifndef _DISABLE_GEOM
+		[branch] if (round(IN.outline.w))
+		{
+			return half4(lerp(float3(1.0,1.0,1.0), c.rgb, _OutlineMulti) * _OutlineColor.rgb, 1.0);
+		}
+		else
 	#endif
+	{
+		#if !_USE_NEW_SHADING
+			half3 d = SAMPLE_TEXTURE2D(_Dark, sampler_Dark, IN.uv).rgb;
+		#else
+			half3 d = 0;
+		#endif
 
-	float3 viewDir = normalize(IN.viewDir);
-	float3 normalWS = normalize(IN.normalWS);
-	normalWS = frontFace > 0.5 ? -normalWS : normalWS;
+		float3 viewDir = normalize(IN.viewDir);
+		float3 normalWS = normalize(IN.normalWS);
+		normalWS = frontFace > 0.5 ? -normalWS : normalWS;
 
-	float3 normalTS = UnpackNormal(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, IN.uv));
-	float3x3 tangentToWorld = CreateTangentToWorld(normalWS, IN.tangentWS.xyz, IN.tangentWS.w);
-	normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
+		#if _NORMALMAP
+			float3 normalTS = UnpackNormal(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, IN.uv));
+			float3x3 tangentToWorld = CreateTangentToWorld(normalWS, IN.tangentWS.xyz, IN.tangentWS.w);
+			normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
+		#endif
 
-	half rim = smoothstep(_EdgeEnd, _EdgeStart, dot(normalWS, -viewDir));
-	#if _EDGE_VERTICAL_VECTOR
-		half verticalLight = smoothstep(0.307, 0.55, dot(normalWS, half3(0, 1, 0)) * 0.5 + 0.5);
-		rim *= verticalLight;
-	#endif
+		half rim = smoothstep(_EdgeEnd, _EdgeStart, dot(normalWS, -viewDir));
+		#if _EDGE_VERTICAL_VECTOR
+			half verticalLight = smoothstep(0.307, 0.55, dot(normalWS, half3(0, 1, 0)) * 0.5 + 0.5);
+			rim *= verticalLight;
+		#endif
 
-	half ll = Luminance(c.rgb);
-	half dl = Luminance(d);
+		half ll = Luminance(c.rgb);
+		half dl = Luminance(d);
 
-	half3 lightRim = rim
-	#if _USE_LUMINANCE
-		* pow(1 + ll, 4)
-	#endif
-		* _EdgeIntensity * _EdgeColor.rgb;
-
-	#if !_USE_NEW_SHADING
-		half3 darkRim = rim
+		half3 lightRim = rim
 		#if _USE_LUMINANCE
-			* pow(1 + dl, 4)
+			* pow(1 + ll, 4)
 		#endif
 			* _EdgeIntensity * _EdgeColor.rgb;
-	#endif
 
-	ToonData data;
-	data.Light = c.rgb;
-	data.Dark = d;
-	data.LightRim = lightRim;
-	#if !_USE_NEW_SHADING
-		data.DarkRim = darkRim * _EdgeDarkMult;
-	#endif
-	data.positionWS = IN.positionWS;
-	data.normalWS = normalWS;
-	data.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(IN.positionHCS);
-	data.positionCS = IN.positionHCS;
+		#if !_USE_NEW_SHADING
+			half3 darkRim = rim
+			#if _USE_LUMINANCE
+				* pow(1 + dl, 4)
+			#endif
+				* _EdgeIntensity * _EdgeColor.rgb;
+		#endif
 
-	return half4(ToonLighting(data, viewDir, IN.shadowCoords), c.a);
+		ToonData data;
+		data.Light = c.rgb;
+		data.Dark = d;
+		data.LightRim = lightRim;
+		#if !_USE_NEW_SHADING
+			data.DarkRim = darkRim * _EdgeDarkMult;
+		#endif
+		data.positionWS = IN.positionWS;
+		data.normalWS = normalWS;
+		data.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(IN.positionHCS);
+		data.positionCS = IN.positionHCS;
+
+		return half4(ToonLighting(data, viewDir, IN.shadowCoords), c.a);
+	}
 }
 
 #endif

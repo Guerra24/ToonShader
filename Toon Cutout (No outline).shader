@@ -41,7 +41,7 @@
 	{
 		PackageRequirements
 		{
-				"com.unity.render-pipelines.universal": "17.0.0"
+			"com.unity.render-pipelines.universal": "17.0.0"
 		}
 		Tags { "Queue" = "Geometry" "RenderPipeline" = "UniversalPipeline" }
 
@@ -53,6 +53,7 @@
 			Cull [_CullMode]
 
 			HLSLPROGRAM
+			#define _DISABLE_GEOM
 			#include_with_pragmas "./URP/ToonCutoutBase.hlsl"
 			ENDHLSL
 		}
@@ -65,6 +66,7 @@
 			Cull [_CullMode]
 
 			HLSLPROGRAM
+			#define _DISABLE_GEOM
 			#include_with_pragmas "./URP/ToonDepthBase.hlsl"
 			ENDHLSL
 		}

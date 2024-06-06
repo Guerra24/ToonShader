@@ -41,6 +41,7 @@ struct Attributes
 {
 	float4 positionOS : POSITION;
 	float3 normalOS : NORMAL;
+	float4 tangentOS : TANGENT;
 	float2 uv : TEXCOORD0;
 };
 
@@ -49,11 +50,12 @@ struct Varyings
 	float4 positionHCS  : SV_POSITION;
 	float2 uv : TEXCOORD0;
 	float3 normalWS : TEXCOORD1;
-	float3 viewDir : TEXCOORD2;
-	float vertexDepth : TEXCOORD3;
-	float4 shadowCoords : TEXCOORD4;
-	float3 positionWS : TEXCOORD5;
-	DECLARE_LIGHTMAP_OR_SH(staticLightmapUV, vertexSH, 6);
+	float4 tangentWS : TEXCOORD2;
+	float3 viewDir : TEXCOORD3;
+	float vertexDepth : TEXCOORD4;
+	float4 shadowCoords : TEXCOORD5;
+	float3 positionWS : TEXCOORD6;
+	DECLARE_LIGHTMAP_OR_SH(staticLightmapUV, vertexSH, 7);
 };
 
 Varyings vert(Attributes IN)
@@ -64,8 +66,10 @@ Varyings vert(Attributes IN)
 	OUT.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 	
 	VertexPositionInputs vertexInput = GetVertexPositionInputs(IN.positionOS);
+	VertexNormalInputs normInputs = GetVertexNormalInputs(IN.normalOS, IN.tangentOS);
 
-	OUT.normalWS = TransformObjectToWorldNormal(IN.normalOS);
+	OUT.normalWS = normInputs.normalWS;
+	OUT.tangentWS = float4(normInputs.tangentWS, IN.tangentOS.w);
 	OUT.viewDir = GetWorldSpaceViewDir(vertexInput.positionWS);
 	float zDepth = OUT.positionHCS.z / OUT.positionHCS.w;
 	#if !UNITY_REVERSED_Z
@@ -93,6 +97,35 @@ half4 frag(Varyings IN, FRONT_FACE_TYPE frontFace : FRON_FACE_SEMANTIC) : SV_Tar
 	float3 normalWS = normalize(IN.normalWS);
 	normalWS = frontFace > 0.5 ? -normalWS : normalWS;
 
+	#if _NORMALMAP
+		float3 normalTS = UnpackNormal(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, IN.uv));
+		float3x3 tangentToWorld = CreateTangentToWorld(normalWS, IN.tangentWS.xyz, IN.tangentWS.w);
+		normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
+	#endif
+
+	half rim = smoothstep(_EdgeEnd, _EdgeStart, dot(normalWS, -viewDir));
+	#if _EDGE_VERTICAL_VECTOR
+		half verticalLight = smoothstep(0.307, 0.55, dot(normalWS, half3(0, 1, 0)) * 0.5 + 0.5);
+		rim *= verticalLight;
+	#endif
+
+	half ll = Luminance(c.rgb);
+	half dl = Luminance(d);
+
+	half3 lightRim = rim
+	#if _USE_LUMINANCE
+		* pow(1 + ll, 4)
+	#endif
+		* _EdgeIntensity * _EdgeColor.rgb;
+
+	#if !_USE_NEW_SHADING
+		half3 darkRim = rim
+		#if _USE_LUMINANCE
+			* pow(1 + dl, 4)
+		#endif
+			* _EdgeIntensity * _EdgeColor.rgb;
+	#endif
+
 	#if _USE_TRANSPARENT_HAIR
 		float2 coords = IN.positionHCS.xy / _ScaledScreenParams.xy;
 		#if UNITY_REVERSED_Z
@@ -102,7 +135,7 @@ half4 frag(Varyings IN, FRONT_FACE_TYPE frontFace : FRON_FACE_SEMANTIC) : SV_Tar
 		#endif
 
 		float distance = LinearEyeDepth(IN.vertexDepth, _ZBufferParams) - LinearEyeDepth(depth, _ZBufferParams);
-		if (distance > 0.001) {
+		[branch] if (distance > 0.001) {
 			c.a *= _HairMaxTransparency;
 			c.a *= smoothstep(_HairCameraStartCutoff, _HairCameraEndCutoff, dot(normalWS, -IN.viewDir));
 			float a = smoothstep(_HairDistanceEndCutoff, _HairDistanceStartCutoff, distance);
@@ -113,8 +146,10 @@ half4 frag(Varyings IN, FRONT_FACE_TYPE frontFace : FRON_FACE_SEMANTIC) : SV_Tar
 	ToonData data;
 	data.Light = c.rgb;
 	data.Dark = d;
-	data.LightRim = 0;
-	data.DarkRim = 0;
+	data.LightRim = lightRim;
+	#if !_USE_NEW_SHADING
+		data.DarkRim = darkRim * _EdgeDarkMult;
+	#endif
 	data.positionWS = IN.positionWS;
 	data.normalWS = normalWS;
 	data.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(IN.positionHCS);
