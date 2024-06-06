@@ -1,7 +1,10 @@
 #ifndef TOON_TRANSPARENT_BASE
 #define TOON_TRANSPARENT_BASE
 
+#pragma shader_feature_local _NORMALMAP
+#pragma shader_feature_local _USE_LUMINANCE
 #pragma shader_feature_local _USE_SPECULAR
+#pragma shader_feature_local _EDGE_VERTICAL_VECTOR
 #pragma shader_feature_local _USE_NEW_SHADING
 #pragma shader_feature_local _USE_AMBIENT
 
@@ -12,9 +15,16 @@
 
 TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
 TEXTURE2D(_Dark); SAMPLER(sampler_Dark);
+TEXTURE2D(_BumpMap); SAMPLER(sampler_BumpMap);
 CBUFFER_START(UnityPerMaterial)
 	float4 _MainTex_ST;
 	float3 _Dark_ST;
+	float4 _BumpMap_ST;
+	half _BumpMapIntensity;
+	half _EdgeStart;
+	half _EdgeEnd;
+	half _EdgeIntensity;
+	float4 _EdgeColor;
     //#if _USE_TRANSPARENT_HAIR
         half _HairMaxTransparency;
         half _HairCameraStartCutoff;

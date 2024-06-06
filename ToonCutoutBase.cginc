@@ -15,6 +15,7 @@ struct Input
 };
 
 sampler2D _MainTex;
+half _AlphaCutoff;
 sampler2D _BumpMap;
 half _BumpMapIntensity;
 sampler2D _Dark;
@@ -22,9 +23,8 @@ sampler2D _Dark;
 half _EdgeStart;
 half _EdgeEnd;
 half _EdgeIntensity;
-//half _EdgeLuminanceMult;
-half _AlphaCutoff;
 float4 _EdgeColor;
+//half _EdgeLuminanceMult;
 
 void vert(inout appdata_full v, out Input o) {
 	UNITY_INITIALIZE_OUTPUT(Input, o);
