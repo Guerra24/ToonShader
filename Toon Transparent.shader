@@ -2,8 +2,9 @@
 {
 	Properties
 	{
-		[Header(Main)]
+		[Header(Textures)]
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
+		_AlphaCutoff("Cutoff" , Range(0, 1)) = 0.5
 		_Dark("Albedo Dark (RGB)", 2D) = "white" {}
 		[Toggle(_NORMALMAP)] _NormalMap("Use Normals", Float) = 0
 		[Normal] _BumpMap("Normal Map", 2D) = "bump" {}
@@ -27,6 +28,11 @@
 		_SpecularSize("Size", Range(0, 1)) = 0.0
 		_SpecularIntensity("Intensity", Range(0, 1)) = 1.0
 		_SpecularIntensityDark("Intensity (Dark)", Range(0, 1)) = 0.5
+		[Header(Outline)]
+		_OutlineColor("Color", Color) = (0.5, 0.5, 0.5, 0.0)
+		_OutlineWidth("Width", Range(0, 0.01)) = 0
+		_OutlineDepth("Depth", Range(0, 0.05)) = 0.01
+		_OutlineMulti("Texture Bleed", Range(0, 1)) = 1.0
 		[Header(Transparent hair)]
 		[Toggle(_USE_TRANSPARENT_HAIR)] _UseTransparentHair("Transparent Hair", Float) = 0
 		_HairMaxTransparency("Max Transparency", Range(0, 1)) = 0.5
@@ -63,6 +69,18 @@
 	}
 	SubShader
 	{
+		Pass {
+			Tags { "RenderType" = "Opaque" }
+			LOD 200
+			Cull Front
+
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			#include "./ToonCutoutOutline.cginc"
+			ENDCG
+		}
+
 		Tags { "RenderType" = "Opaque" "Queue"="Transparent" "ForceNoShadowCasting"="True" "RenderPipeline" = "" }
 		LOD 200
 		Cull [_CullMode]
