@@ -27,7 +27,7 @@ v2f vert (appdata_base v) {
 
 half4 frag (v2f IN) : SV_Target
 {
-	fixed4 c = tex2D(_MainTex, IN.uv);
+	half4 c = tex2D(_MainTex, IN.uv);
 	clip(c.a - _AlphaCutoff);
 	return half4(lerp(float3(1.0,1.0,1.0), c.rgb, _OutlineMulti) * _OutlineColor.rgb, 1.0);
 }

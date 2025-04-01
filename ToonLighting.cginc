@@ -97,7 +97,7 @@ struct SurfaceOutputToon
 #endif
 
 half _Sharpness;
-fixed3 _ShadowColor;
+half3 _ShadowColor;
 half _EdgeDarkMult;
 
 half3 BRDF_DirectionalLight(SurfaceOutputToon s, half3 viewDir, UnityLight light, UnityIndirect indirect)

@@ -33,11 +33,15 @@
 		_OutlineWidth("Width", Range(0, 0.01)) = 0
 		_OutlineDepth("Depth", Range(0, 0.05)) = 0.01
 		_OutlineMulti("Texture Bleed", Range(0, 1)) = 1.0
+		[Header(Matcap)]
+		[Toggle(_USE_MATCAP)] _UseMatcap("Use Matcap", Float) = 0
+		[Toggle(_MATCAP_MULT)] _MatcapMult("Multiply color", Float) = 0
+		_Matcap("Matcap", 2D) = "white" {}
+		_MatcapMask("Mask", 2D) = "white" {}
 		[Header(Fixed Function)]
 		[Enum(UnityEngine.Rendering.CullMode)] _CullMode("Cull Mode", Int) = 0
 		_StencilRef("Stencil Ref", Int) = 0
 	}
-
 	SubShader
 	{
 		PackageRequirements
@@ -140,6 +144,8 @@
 		#pragma shader_feature _EDGE_VERTICAL_VECTOR
 		#pragma shader_feature _USE_NEW_SHADING
 		#pragma shader_feature _USE_AMBIENT
+		#pragma shader_feature _USE_MATCAP
+		#pragma shader_feature _MATCAP_MULT
 		#pragma target 4.0
 
 		#include "./ToonLighting.cginc"

@@ -54,12 +54,12 @@ UNITY_INSTANCING_BUFFER_END(Props)
 
 void surf(Input IN, inout SurfaceOutputToon o)
 {
-	fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
+	half4 c = tex2D(_MainTex, IN.uv_MainTex);
 
 	#if !_USE_NEW_SHADING
-		fixed3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
+		half3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
 	#else
-		fixed3 d = fixed3(0, 0, 0);
+		half3 d = half3(0, 0, 0);
 	#endif
 
 	#if _NORMALMAP

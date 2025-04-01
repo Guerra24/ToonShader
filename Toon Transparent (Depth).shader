@@ -62,7 +62,7 @@ Shader "Guerra24/Toon Transparent (Depth)"
 
 			half4 frag (v2f i) : COLOR
 			{
-                fixed4 c = tex2D(_MainTex, i.uv);
+                half4 c = tex2D(_MainTex, i.uv);
 				clip(c.a - 0.5);
 				return half4(0, 0, 0, 0);
 			}

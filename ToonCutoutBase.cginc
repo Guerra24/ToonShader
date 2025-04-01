@@ -25,6 +25,8 @@ half _EdgeEnd;
 half _EdgeIntensity;
 float4 _EdgeColor;
 //half _EdgeLuminanceMult;
+sampler2D _Matcap;
+sampler2D _MatcapMask;
 
 void vert(inout appdata_full v, out Input o) {
 	UNITY_INITIALIZE_OUTPUT(Input, o);
@@ -38,16 +40,16 @@ UNITY_INSTANCING_BUFFER_END(Props)
 
 void surf(Input IN, inout SurfaceOutputToon o)
 {
-	fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
+	half4 c = tex2D(_MainTex, IN.uv_MainTex);
 	clip(c.a - _AlphaCutoff);
 	//clip(isDithered(IN.screenPos.xy / IN.screenPos.w, c.a));
 
 	#if !UNITY_PASS_SHADOWCASTER
 
 		#if !_USE_NEW_SHADING
-			fixed3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
+			half3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
 		#else
-			fixed3 d = fixed3(0, 0, 0);
+			half3 d = half3(0, 0, 0);
 		#endif
 
 		#if _NORMALMAP
@@ -60,6 +62,16 @@ void surf(Input IN, inout SurfaceOutputToon o)
 		#if _EDGE_VERTICAL_VECTOR
 			half verticalLight = smoothstep(0.307, 0.55, dot(pixelNormal, half3(0, 1, 0)) * 0.5 + 0.5);
 			rim *= verticalLight;
+		#endif
+
+		#if _USE_MATCAP
+			float3 matcap = tex2D(_Matcap, (normalize(mul((float3x3)UNITY_MATRIX_V, pixelNormal)) * 0.5 + 0.5).xy);
+			half mask = tex2D(_MatcapMask, IN.uv_MainTex).r;
+			#if _MATCAP_MULT
+				c.rgb = lerp(c.rgb, c.rgb * matcap, mask);
+			#else
+				c.rgb = lerp(c.rgb, matcap, mask);
+			#endif
 		#endif
 
 		o.Alpha = 1.0;
