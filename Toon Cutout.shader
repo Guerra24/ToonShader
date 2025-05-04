@@ -46,7 +46,7 @@
 	{
 		PackageRequirements
 		{
-			"com.unity.render-pipelines.universal": "17.0.0"
+			"com.unity.render-pipelines.universal": "17.1.0"
 		}
 		Tags { "Queue" = "Geometry" "RenderPipeline" = "UniversalPipeline" }
 		//https://gamedevbill.com/geometry-shaders-in-urp/

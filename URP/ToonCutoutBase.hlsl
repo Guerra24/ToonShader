@@ -1,13 +1,6 @@
 #ifndef TOON_CUTOUT_BASE
 #define TOON_CUTOUT_BASE
 
-#pragma shader_feature_local _NORMALMAP
-#pragma shader_feature_local _USE_LUMINANCE
-#pragma shader_feature_local _USE_SPECULAR
-#pragma shader_feature_local _EDGE_VERTICAL_VECTOR
-#pragma shader_feature_local _USE_NEW_SHADING
-#pragma shader_feature_local _USE_AMBIENT
-
 #include_with_pragmas "./ToonBase.hlsl"
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -51,7 +44,7 @@ Varyings vert(Attributes IN)
 	#endif
 	OUT.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 	
-	VertexPositionInputs vertexInput = GetVertexPositionInputs(IN.positionOS);
+	VertexPositionInputs vertexInput = GetVertexPositionInputs(IN.positionOS.xyz);
 	VertexNormalInputs normInputs = GetVertexNormalInputs(IN.normalOS, IN.tangentOS);
 
 	OUT.normalWS = normInputs.normalWS;
@@ -59,7 +52,8 @@ Varyings vert(Attributes IN)
 	OUT.viewDir = GetWorldSpaceViewDir(vertexInput.positionWS);
 	OUT.shadowCoords = GetShadowCoord(vertexInput);
 	OUT.positionWS = vertexInput.positionWS;
-	OUTPUT_SH4(vertexInput.positionWS, OUT.normalWS, normalize(OUT.viewDir), OUT.vertexSH);
+	float4 occlusionOut = 0.0;
+	OUTPUT_SH4(vertexInput.positionWS, OUT.normalWS, normalize(OUT.viewDir), OUT.vertexSH, occlusionOut);
 	#ifndef _DISABLE_GEOM
 		OUT.outline = float4(normalize(IN.normalOS), 0.0);
 	#endif
@@ -68,7 +62,7 @@ Varyings vert(Attributes IN)
 }
 
 #ifndef _DISABLE_GEOM
-	#include_with_pragmas "./ToonCutoutGeometry.hlsl"
+	#include_with_pragmas "./ToonOutlineGeometry.hlsl"
 #endif
 
 half4 frag(Varyings IN, FRONT_FACE_TYPE frontFace : FRON_FACE_SEMANTIC) : SV_Target
@@ -103,6 +97,16 @@ half4 frag(Varyings IN, FRONT_FACE_TYPE frontFace : FRON_FACE_SEMANTIC) : SV_Tar
 		#if _EDGE_VERTICAL_VECTOR
 			half verticalLight = smoothstep(0.307, 0.55, dot(normalWS, half3(0, 1, 0)) * 0.5 + 0.5);
 			rim *= verticalLight;
+		#endif
+
+		#if _USE_MATCAP
+			float3 matcap = SAMPLE_TEXTURE2D(_Matcap, sampler_Matcap, (normalize(mul((float3x3)UNITY_MATRIX_V, normalWS)) * 0.5 + 0.5).xy);
+			half mask = SAMPLE_TEXTURE2D(_MatcapMask, sampler_MatcapMask, IN.uv).r;
+			#if _MATCAP_MULT
+				c.rgb = lerp(c.rgb, c.rgb * matcap, mask);
+			#else
+				c.rgb = lerp(c.rgb, matcap, mask);
+			#endif
 		#endif
 
 		half ll = Luminance(c.rgb);

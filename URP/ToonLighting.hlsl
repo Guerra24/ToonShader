@@ -50,6 +50,16 @@ half3 ToonLighting(ToonData inputData, float3 viewDir, float4 shadowCoords)
 	half2 lighting = CalculateLight(GetMainLight(shadowCoords), inputData, viewDir, half2(0, 0));
 
 	#if _ADDITIONAL_LIGHTS
+
+		#if USE_CLUSTER_LIGHT_LOOP
+			UNITY_LOOP for (uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
+			{
+				Light light = GetAdditionalLight(lightIndex, inputData.positionWS);
+				light.shadowAttenuation = AdditionalLightRealtimeShadow(lightIndex, inputData.positionWS, light.direction);
+				lighting = CalculateLight(light, inputData, viewDir, lighting);
+			}
+		#endif
+
 		uint pixelLightCount = GetAdditionalLightsCount();
 
 		LIGHT_LOOP_BEGIN(pixelLightCount)

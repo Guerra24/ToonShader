@@ -4,6 +4,8 @@
 TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
 TEXTURE2D(_Dark); SAMPLER(sampler_Dark);
 TEXTURE2D(_BumpMap); SAMPLER(sampler_BumpMap);
+TEXTURE2D(_Matcap); SAMPLER(sampler_Matcap);
+TEXTURE2D(_MatcapMask); SAMPLER(sampler_MatcapMask);
 CBUFFER_START(UnityPerMaterial)
 	float4 _MainTex_ST;
 	half _AlphaCutoff;

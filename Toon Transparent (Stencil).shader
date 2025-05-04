@@ -50,7 +50,7 @@
 	{
 		PackageRequirements
 		{
-			"com.unity.render-pipelines.universal": "17.0.0"
+			"com.unity.render-pipelines.universal": "17.1.0"
 		}
 		Tags { "Queue" = "Transparent" "RenderPipeline" = "UniversalPipeline" }
 
@@ -71,7 +71,7 @@
 			Blend SrcAlpha OneMinusSrcAlpha
 
 			HLSLPROGRAM
-			#pragma shader_feature_local _USE_TRANSPARENT_HAIR
+			#define _DISABLE_GEOM
 			#include_with_pragmas "./URP/ToonTransparentBase.hlsl"
 			ENDHLSL
 		}

@@ -46,7 +46,7 @@ Varyings vert(Attributes IN)
 }
 
 #ifndef _DISABLE_GEOM
-	#include_with_pragmas "./ToonCutoutGeometry.hlsl"
+	#include_with_pragmas "./ToonOutlineGeometry.hlsl"
 #endif
 
 void frag(Varyings IN, FRONT_FACE_TYPE frontFace : FRON_FACE_SEMANTIC, out half4 outNormalWS : SV_Target0)
