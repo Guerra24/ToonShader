@@ -72,7 +72,21 @@
 
 			HLSLPROGRAM
 			#define _DISABLE_GEOM
-			#include_with_pragmas "./URP/ToonDepthBase.hlsl"
+			#include_with_pragmas "./URP/ToonDepthNormalBase.hlsl"
+			ENDHLSL
+		}
+
+		Pass
+		{
+			Name "DepthOnly"
+			Tags { "LightMode" = "DepthOnly" }
+			LOD 200
+			Cull [_CullMode]
+			ColorMask R
+
+			HLSLPROGRAM
+			#define _DISABLE_GEOM
+			#include_with_pragmas "./URP/ToonDepthOnlyBase.hlsl"
 			ENDHLSL
 		}
 

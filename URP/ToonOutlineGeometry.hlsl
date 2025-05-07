@@ -31,9 +31,9 @@ void geom(triangle Varyings input[3], inout TriangleStream<Varyings> triStream)
     vert1.positionHCS.xyz += vert1.outline.xyz * _OutlineWidth - viewDir1 * _OutlineDepth;
     vert2.positionHCS.xyz += vert2.outline.xyz * _OutlineWidth - viewDir2 * _OutlineDepth;
 
-    float3 vert0WS = TransformObjectToWorld(vert0.positionHCS.xyz);
-    float3 vert1WS = TransformObjectToWorld(vert1.positionHCS.xyz);
-    float3 vert2WS = TransformObjectToWorld(vert2.positionHCS.xyz);
+    float3 vert0WS = vert0.positionHCS.xyz;
+    float3 vert1WS = vert1.positionHCS.xyz;
+    float3 vert2WS = vert2.positionHCS.xyz;
 
     float3 normal = normalize(cross(normalize(vert0WS - vert1WS), normalize(vert0WS - vert2WS)));
 

@@ -20,9 +20,8 @@ struct Varyings
 {
 	float4 positionHCS  : SV_POSITION;
 	float2 uv : TEXCOORD0;
-	float3 normalWS : TEXCOORD1;
 	#ifndef _DISABLE_GEOM
-		float4 outline : TEXCOORD2;
+		float4 outline : TEXCOORD1;
 	#endif
 };
 
@@ -37,7 +36,6 @@ Varyings vert(Attributes IN)
 	#endif
 	OUT.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 
-	OUT.normalWS = TransformObjectToWorldNormal(IN.normalOS);
 	#ifndef _DISABLE_GEOM
 		OUT.outline = float4(normalize(IN.normalOS), 0.0);
 	#endif
@@ -49,21 +47,11 @@ Varyings vert(Attributes IN)
 	#include_with_pragmas "./ToonOutlineGeometry.hlsl"
 #endif
 
-void frag(Varyings IN, FRONT_FACE_TYPE frontFace : FRON_FACE_SEMANTIC, out half4 outNormalWS : SV_Target0)
+half frag(Varyings IN) : SV_TARGET
 {
     half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
 	clip(c.a - _AlphaCutoff);
-	#ifndef _DISABLE_GEOM
-		[branch] if (round(IN.outline.w)) {
-			outNormalWS = half4(-IN.outline.xyz, 0.0);
-		}
-		else
-	#endif
-	{
-		float3 normalWS = normalize(IN.normalWS);
-		normalWS = frontFace > 0.5 ? -normalWS : normalWS;
-		outNormalWS = half4(normalWS, 0.0);
-	}
+	return IN.positionHCS.z;
 }
 
 #endif
