@@ -27,6 +27,7 @@ float4 _EdgeColor;
 //half _EdgeLuminanceMult;
 sampler2D _Matcap;
 sampler2D _MatcapMask;
+float4 _Color;
 
 void vert(inout appdata_full v, out Input o) {
 	UNITY_INITIALIZE_OUTPUT(Input, o);
@@ -93,7 +94,7 @@ void surf(Input IN, inout SurfaceOutputToon o)
 				* _EdgeIntensity * _EdgeColor.rgb;
 		#endif
 
-		o.Albedo = c.rgb;
+		o.Albedo = c.rgb * _Color.rgb;
 		o.LightRim = lightRim;
 		o.Dark = d;
 		#if !_USE_NEW_SHADING

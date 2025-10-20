@@ -4,6 +4,7 @@
 	{
 		[Header(Textures)]
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
+		[HDR] _Color("Color", Color) = (1.0, 1.0, 1.0, 1.0)
 		_AlphaCutoff("Cutoff" , Range(0, 1)) = 0.5
 		_Dark("Albedo Dark (RGB)", 2D) = "white" {}
 		[Toggle(_NORMALMAP)] _NormalMap("Use Normals", Float) = 0

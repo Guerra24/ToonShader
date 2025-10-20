@@ -36,6 +36,8 @@ float4 _EdgeColor;
 	half _HairDistanceEndCutoff;
 #endif
 
+float4 _Color;
+
 void vert(inout appdata_full v, out Input o) {
 	UNITY_INITIALIZE_OUTPUT(Input, o);
 	o.cameraDir = mul(unity_ObjectToWorld, v.vertex) - _WorldSpaceCameraPos;
@@ -104,13 +106,13 @@ void surf(Input IN, inout SurfaceOutputToon o)
 		}
 	#endif
 
-	o.Albedo = c.rgb;
+	o.Albedo = c.rgb * _Color.rgb;
 	o.LightRim = lightRim;
 	o.Dark = d;
 	#if !_USE_NEW_SHADING
 		o.DarkRim = darkRim * _EdgeDarkMult;
 	#endif
-	o.Alpha = c.a;
+	o.Alpha = c.a * _Color.a;
 }
 
 #endif

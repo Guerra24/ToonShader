@@ -4,6 +4,7 @@
 	{
 		[Header(Textures)]
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
+		[HDR] _Color("Color", Color) = (1.0, 1.0, 1.0, 1.0)
 		_AlphaCutoff("Cutoff" , Range(0, 1)) = 0.5
 		_Dark("Albedo Dark (RGB)", 2D) = "white" {}
 		[Toggle(_NORMALMAP)] _NormalMap("Use Normals", Float) = 0
@@ -86,7 +87,7 @@
 		Cull [_CullMode]
 
 		CGPROGRAM
-		#pragma surface surf Toon vertex:vert alpha:blend
+		#pragma surface surf Toon vertex:vert alpha:premul
 		#pragma shader_feature _NORMALMAP
 		#pragma shader_feature _USE_LUMINANCE
 		#pragma shader_feature _USE_SPECULAR

@@ -9,6 +9,7 @@ half _AlphaCutoff;
 float4 _OutlineColor;
 half _OutlineDepth;
 half _OutlineMulti;
+float4 _Color;
 
 struct v2f {
 	float4 pos : SV_POSITION;
@@ -29,7 +30,7 @@ half4 frag (v2f IN) : SV_Target
 {
 	half4 c = tex2D(_MainTex, IN.uv);
 	clip(c.a - _AlphaCutoff);
-	return half4(lerp(float3(1.0,1.0,1.0), c.rgb, _OutlineMulti) * _OutlineColor.rgb, 1.0);
+	return half4(lerp(float3(1.0,1.0,1.0), c.rgb * _Color.rgb, _OutlineMulti) * _OutlineColor.rgb, 1.0);
 }
 
 #endif
