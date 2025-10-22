@@ -20,6 +20,7 @@ struct Input
 sampler2D _CameraDepthTexture;
 
 sampler2D _MainTex;
+half _AlphaCutoff;
 sampler2D _Dark;
 sampler2D _BumpMap;
 half _BumpMapIntensity;
@@ -57,6 +58,7 @@ UNITY_INSTANCING_BUFFER_END(Props)
 void surf(Input IN, inout SurfaceOutputToon o)
 {
 	half4 c = tex2D(_MainTex, IN.uv_MainTex);
+	clip(c.a - _AlphaCutoff);
 
 	#if !_USE_NEW_SHADING
 		half3 d = tex2D(_Dark, IN.uv_MainTex).rgb;
